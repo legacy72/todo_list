@@ -16,7 +16,7 @@ import android.widget.Toast;
 import java.text.DateFormat;
 import java.util.Calendar;
 
-public class EditEvent extends AppCompatActivity implements  DatePickerDialog.OnDateSetListener{
+public class EditEvent extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
 
 
     @Override
