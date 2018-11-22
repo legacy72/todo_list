@@ -24,6 +24,8 @@ public class EditEvent extends AppCompatActivity implements  DatePickerDialog.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_event);
 
+        setTitle("Редактирование события");
+
         ImageButton btn = findViewById(R.id.button);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override

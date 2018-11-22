@@ -3,6 +3,7 @@ package com.example.vlad.todolist;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -25,9 +26,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //test
-//        Toast toast = Toast.makeText(getApplicationContext(), "клик", Toast.LENGTH_SHORT);
-//        toast.show();
+
+        //addEvent();
     }
 
     @Override
@@ -57,15 +57,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onClick(View v) {
+    public void onClickEditEvent(View v) {
         Intent intent = new Intent(this, EditEvent.class);
         startActivityForResult(intent, 1);
     }
 
 
-
-
-
+    public void onClickAddEvent(View v) {
+        Intent intent = new Intent(this, AddEvent.class);
+        startActivityForResult(intent, 1);
+    }
 
 
 
