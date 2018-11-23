@@ -35,10 +35,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-
-
-
-
     }
 
     @Override
@@ -89,8 +85,6 @@ public class MainActivity extends AppCompatActivity {
 
         AddEvent(nameEvent, dateEvent);
 
-        Toast toast = Toast.makeText(getApplicationContext(), nameEvent, Toast.LENGTH_SHORT);
-        toast.show();
 
     }
 
@@ -113,20 +107,27 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout llEvent = new LinearLayout(this);
         llEvent.setOrientation(LinearLayout.HORIZONTAL);
 
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
 
         llEvent.setLayoutParams(lp);
 
+
+
+        //параметры лэйаута для чекбокса
+        LinearLayout.LayoutParams lpForCheckBox = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+
+
         //чекбокс
         CheckBox checkbox = new CheckBox(this);
-        checkbox.setLayoutParams(lp);
+        checkbox.setLayoutParams(lpForCheckBox);
 
         //текствью для названия события
-        LinearLayout.LayoutParams lpForTvName = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT, 4f);
-        lpForTvName.weight = 4;
-        lpForTvName.setMargins(0, 50, 0, 0);
+        LinearLayout.LayoutParams lpForTvName = new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        lpForTvName.weight = 6;
+        lpForTvName.setMargins(0, 5, 0, 0);
 
         TextView tvName = new TextView(this);
         tvName.setLayoutParams(lpForTvName);
@@ -134,9 +135,9 @@ public class MainActivity extends AppCompatActivity {
         tvName.setTextSize(14);
 
         //текствью для даты
-        LinearLayout.LayoutParams lpForTvDate = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-        lpForTvDate.weight = 1;
+        LinearLayout.LayoutParams lpForTvDate = new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        lpForTvDate.weight = 4;
         lpForTvDate.setMargins(0, 5, 0, 0);
 
         TextView tvDate = new TextView(this);
@@ -154,6 +155,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         linearLayout.addView(llLine);
+
+
+        Toast toast = Toast.makeText(getApplicationContext(), nameEvent, Toast.LENGTH_SHORT);
+        toast.show();
     }
 
 
