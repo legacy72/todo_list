@@ -26,19 +26,20 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EventListener;
+import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     LinearLayout linearLayout;
     LinearLayout llLine;
-    LinearLayout[] massOfLayouts;
-    List<LinearLayout> listOfLayouts = new ArrayList<>();
     ArrayList<EventClass> listOfEvents = new ArrayList<EventClass>();
 
     @Override
@@ -94,7 +95,13 @@ public class MainActivity extends AppCompatActivity {
             AddEvent(nameEvent, dateEvent);
         }
         else if (requestCode == 2){
-            //
+            if (data == null){
+                return;
+            }
+            EventClass e = (EventClass) data.getSerializableExtra("event");
+
+
+            EditChangedEvent(e);
         }
 
 
@@ -103,11 +110,85 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    //редачим выбранное событие
+    public void EditChangedEvent(EventClass e){
+        int eventId = e.id;
+
+        TextView tvNameEvent = linearLayout.findViewWithTag("name" + eventId);
+        TextView tvDateEvent = linearLayout.findViewWithTag("date" + eventId);
+
+        tvNameEvent.setText(e.name);
+        tvDateEvent.setText(e.date);
+
+
+        int index = getIndexOfEvent(eventId, listOfEvents);
+        listOfEvents.set(index , e);
+    }
+
+
+    public int getIndexOfEvent(int id, List<EventClass> listOfEvents)
+    {
+        Iterator<EventClass> iterator = listOfEvents.iterator();
+        int index = 0;
+        while (iterator.hasNext())
+        {
+            EventClass e = iterator.next();
+            if (e.id == id)
+            {
+                return index;
+            }
+            index++;
+        }
+        return 0;
+    }
+
+
+
+
+
+
+    //заполняем лист объектов событий
+    public EventClass FillListOfEvents(String nameEvent, String dateEvent){
+        EventClass e;
+        if (listOfEvents.size() == 0) {
+            e = new EventClass(1, nameEvent, dateEvent, "", false);
+            listOfEvents.add(e);
+        }
+        else{
+            EventClass maxId = Collections.max(listOfEvents, new EventComp());
+            e = new EventClass(maxId.id + 1, nameEvent, dateEvent, "", false);
+            listOfEvents.add(e);
+        }
+        return e;
+    }
+
+
+    //запускаем активити на редакт
+    public void EditEvent(View v){
+
+        for(EventClass e : listOfEvents) {
+            if(e.id == v.getId()) {
+                Log.d("logs", String.valueOf(e.name));
+                Intent intent = new Intent(this, EditEvent.class);
+                intent.putExtra("event", e);
+                startActivityForResult(intent, 2);
+            }
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+    //лоханская верстка, лучше себя пожалеть и не смотреть код
     public void AddEvent(final String nameEvent, String dateEvent){
         // создаем объект события
         EventClass e = FillListOfEvents(nameEvent, dateEvent);
-
-
 
 
         linearLayout = findViewById(R.id.mainLinearLayout);
@@ -115,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
         //лайаут для всего списка
         llLine = new LinearLayout(this);
         llLine.setId(e.id);
+        llLine.setTag("ll" + e.id);
         llLine.setOrientation(LinearLayout.HORIZONTAL);
 
         llLine.setOnClickListener(new View.OnClickListener() {
@@ -150,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
 
         //чекбокс
         CheckBox checkbox = new CheckBox(this);
-        checkbox.setId(e.id);
+        checkbox.setTag("cb" + e.id);
         checkbox.setLayoutParams(lpForCheckBox);
 
         //текствью для названия события
@@ -160,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
         lpForTvName.setMargins(0, 5, 0, 0);
 
         TextView tvName = new TextView(this);
-        tvName.setId(e.id);
+        tvName.setTag("name" + e.id);
         tvName.setLayoutParams(lpForTvName);
         tvName.setText(e.name);
         tvName.setTextSize(14);
@@ -173,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
 
         TextView tvDate = new TextView(this);
         tvDate.setId(e.id);
+        tvDate.setTag("date" + e.id);
         tvDate.setLayoutParams(lpForTvDate);
         tvDate.setText(e.date);
         tvDate.setTextSize(14);
@@ -187,62 +270,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         linearLayout.addView(llLine);
-
-
-        // добавить в список строк
-        listOfLayouts.add(llLine);
-
-
-        
-       
-
-
-    }
-
-    //заполняем лист объектов событий
-    public EventClass FillListOfEvents(String nameEvent, String dateEvent){
-        EventClass e;
-        if (listOfEvents.size() == 0) {
-            e = new EventClass(1, nameEvent, dateEvent, "", false);
-            listOfEvents.add(e);
-        }
-        else{
-            EventClass maxId = Collections.max(listOfEvents, new EventComp());
-            e = new EventClass(maxId.id + 1, nameEvent, dateEvent, "", false);
-            listOfEvents.add(e);
-        }
-        return e;
-    }
-
-
-
-    public void EditEvent(View v){
-        //EventClass e = listOfEvents.get(v.getId());
-
-
-        for(EventClass e : listOfEvents) {
-            if(e.id == v.getId()) {
-                Log.d("logs", String.valueOf(e.name));
-                Intent intent = new Intent(this, EditEvent.class);
-                intent.putExtra("event", e);
-                startActivityForResult(intent, 2);
-            }
-        }
-
-    }
-
-
-
-
-
-
-
-
-    class EventComp implements Comparator<EventClass>{
-        @Override
-        public int compare(EventClass e1, EventClass e2) {
-            return e1.id > e2.id ? 1 : e1.id == e2.id ? 0 : -1;
-        }
     }
 
 }

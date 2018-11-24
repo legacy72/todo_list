@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="15dp"
                 android:layout_gravity="right"
-                android:onClick="acceptChanges"
+                android:onClick="backToMainActivity"
                 android:clickable="true"
                 app:srcCompat="@android:drawable/btn_star_big_on" />
         </LinearLayout>
