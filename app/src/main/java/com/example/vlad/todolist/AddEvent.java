@@ -56,6 +56,7 @@ public class AddEvent extends AppCompatActivity implements DatePickerDialog.OnDa
 
         Intent intent = new Intent();
         intent.putExtra("textInputName", textInputName.getText().toString());
+        intent.putExtra("textInputComment", textInputName.getText().toString());
         intent.putExtra("eventDate", eventDate.getText().toString());
         setResult(RESULT_OK, intent);
         finish();

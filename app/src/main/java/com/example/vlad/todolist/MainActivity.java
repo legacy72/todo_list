@@ -91,8 +91,9 @@ public class MainActivity extends AppCompatActivity {
             }
             String nameEvent = data.getStringExtra("textInputName");
             String dateEvent = data.getStringExtra("eventDate");
+            String commentEvent = data.getStringExtra("textInputComment");
 
-            AddEvent(nameEvent, dateEvent);
+            AddEvent(nameEvent, dateEvent, commentEvent);
         }
         else if (requestCode == 2){
             if (data == null){
@@ -107,9 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
-
+    
     //редачим выбранное событие
     public void EditChangedEvent(EventClass e){
         int eventId = e.id;
@@ -119,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
 
         tvNameEvent.setText(e.name);
         tvDateEvent.setText(e.date);
-
 
         int index = getIndexOfEvent(eventId, listOfEvents);
         listOfEvents.set(index , e);
@@ -143,32 +141,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-
-
     //заполняем лист объектов событий
-    public EventClass FillListOfEvents(String nameEvent, String dateEvent){
+    public EventClass FillListOfEvents(String nameEvent, String dateEvent, String commentEvent){
         EventClass e;
         if (listOfEvents.size() == 0) {
-            e = new EventClass(1, nameEvent, dateEvent, "", false);
+            e = new EventClass(1, nameEvent, dateEvent, commentEvent, false);
             listOfEvents.add(e);
         }
         else{
             EventClass maxId = Collections.max(listOfEvents, new EventComp());
-            e = new EventClass(maxId.id + 1, nameEvent, dateEvent, "", false);
+            e = new EventClass(maxId.id + 1, nameEvent, dateEvent, commentEvent, false);
             listOfEvents.add(e);
         }
         return e;
     }
-
 
     //запускаем активити на редакт
     public void EditEvent(View v){
 
         for(EventClass e : listOfEvents) {
             if(e.id == v.getId()) {
-                Log.d("logs", String.valueOf(e.name));
                 Intent intent = new Intent(this, EditEvent.class);
                 intent.putExtra("event", e);
                 startActivityForResult(intent, 2);
@@ -177,18 +169,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
-
-
-
-
-
-
     //лоханская верстка, лучше себя пожалеть и не смотреть код
-    public void AddEvent(final String nameEvent, String dateEvent){
+    public void AddEvent(final String nameEvent, String dateEvent, String commentEvent){
         // создаем объект события
-        EventClass e = FillListOfEvents(nameEvent, dateEvent);
+        EventClass e = FillListOfEvents(nameEvent, dateEvent, commentEvent);
 
 
         linearLayout = findViewById(R.id.mainLinearLayout);

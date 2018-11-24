@@ -140,9 +140,6 @@ public class EditEvent extends AppCompatActivity {
 
         TextView tvDate = findViewById(R.id.dateEvent);
         tvDate.setText(e.date);
-
-
-
     }
 
     public void acceptChanges(){
