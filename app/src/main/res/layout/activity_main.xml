@@ -15,18 +15,23 @@
         android:background="@color/my_grey">
 
         <TextView
-            android:id="@+id/tv1"
+            android:id="@+id/countEvents"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:layout_weight="4"
-            android:text="4 события" />
+            android:textSize="18sp"
+            android:layout_margin="10dp"
+            android:textColor="@color/colorBlack"
+            android:layout_weight="6" />
 
         <TextView
             android:id="@+id/tv2"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="Дата" />
+            android:layout_margin="10dp"
+            android:layout_weight="4"
+            android:text="Дата"
+            android:textColor="@color/colorBlack"
+            android:textSize="18sp" />
     </LinearLayout>
 
 

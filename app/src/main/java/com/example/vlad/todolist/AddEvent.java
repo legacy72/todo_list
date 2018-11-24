@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -42,22 +43,25 @@ public class AddEvent extends AppCompatActivity implements DatePickerDialog.OnDa
         c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
         String currentDate = DateFormat.getDateInstance().format(c.getTime());
-        TextView tv = findViewById(R.id.textView);
+        TextView tv = findViewById(R.id.dateEvent);
         tv.setText(currentDate);
     }
 
     public void onClickSaveEvent(View v){
         EditText textInputName = findViewById(R.id.textInputName);
         EditText textInputComment = findViewById(R.id.textInputComment);
-        TextView eventDate = findViewById(R.id.textView);
+        TextView eventDate = findViewById(R.id.dateEvent);
 
-
+        String eventDateStr = eventDate.getText().toString();
+        if(eventDateStr.equals("Дата не указана")){
+            eventDateStr = "Не указано";
+        }
 
 
         Intent intent = new Intent();
         intent.putExtra("textInputName", textInputName.getText().toString());
-        intent.putExtra("textInputComment", textInputName.getText().toString());
-        intent.putExtra("eventDate", eventDate.getText().toString());
+        intent.putExtra("textInputComment", textInputComment.getText().toString());
+        intent.putExtra("eventDate", eventDateStr);
         setResult(RESULT_OK, intent);
         finish();
     }
