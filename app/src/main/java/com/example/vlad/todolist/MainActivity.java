@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,9 +26,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.EventListener;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     LinearLayout linearLayout;
+    LinearLayout llLine;
+    LinearLayout[] massOfLayouts;
+    List<LinearLayout> listOfLayouts = new ArrayList<>();
+    ArrayList<EventClass> listOfEvents = new ArrayList<EventClass>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,12 +101,28 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    public void AddEvent(String nameEvent, String dateEvent){
+    public void AddEvent(final String nameEvent, String dateEvent){
+        // создаем объект события
+        EventClass e = FillListOfEvents(nameEvent, dateEvent);
+
+
+
+
         linearLayout = findViewById(R.id.mainLinearLayout);
 
         //лайаут для всего списка
-        LinearLayout llLine = new LinearLayout(this);
+        llLine = new LinearLayout(this);
+        llLine.setId(e.id);
         llLine.setOrientation(LinearLayout.HORIZONTAL);
+
+        llLine.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast toast = Toast.makeText(getApplicationContext(), String.valueOf(v.getId()), Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+
 
         LinearLayout.LayoutParams lpForLinearLayoutLine = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -121,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
 
         //чекбокс
         CheckBox checkbox = new CheckBox(this);
+        checkbox.setId(e.id);
         checkbox.setLayoutParams(lpForCheckBox);
 
         //текствью для названия события
@@ -130,8 +157,9 @@ public class MainActivity extends AppCompatActivity {
         lpForTvName.setMargins(0, 5, 0, 0);
 
         TextView tvName = new TextView(this);
+        tvName.setId(e.id);
         tvName.setLayoutParams(lpForTvName);
-        tvName.setText(nameEvent);
+        tvName.setText(e.name);
         tvName.setTextSize(14);
 
         //текствью для даты
@@ -141,8 +169,9 @@ public class MainActivity extends AppCompatActivity {
         lpForTvDate.setMargins(0, 5, 0, 0);
 
         TextView tvDate = new TextView(this);
+        tvDate.setId(e.id);
         tvDate.setLayoutParams(lpForTvDate);
-        tvDate.setText(dateEvent);
+        tvDate.setText(e.date);
         tvDate.setTextSize(14);
 
 
@@ -157,22 +186,54 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.addView(llLine);
 
 
-        Toast toast = Toast.makeText(getApplicationContext(), nameEvent, Toast.LENGTH_SHORT);
-        toast.show();
+        // добавить в список строк
+        listOfLayouts.add(llLine);
+
+
+        
+       
+
+
     }
 
-
-    public class Event {
-
-        String name;
-        int price;
-        boolean box;
-
-
-        Event(String _describe, int _price, boolean _box) {
-            name = _describe;
-            price = _price;
-            box = _box;
+    //заполняем лист объектов событий
+    public EventClass FillListOfEvents(String nameEvent, String dateEvent){
+        EventClass e;
+        if (listOfEvents.size() == 0) {
+            e = new EventClass(1, nameEvent, dateEvent, "", false);
+            listOfEvents.add(e);
         }
+        else{
+            EventClass maxId = Collections.max(listOfEvents, new EventComp());
+            e = new EventClass(maxId.id + 1, nameEvent, dateEvent, "", false);
+            listOfEvents.add(e);
+        }
+        return e;
+    }
+
+    class EventComp implements Comparator<EventClass>{
+        @Override
+        public int compare(EventClass e1, EventClass e2) {
+            return e1.id > e2.id ? 1 : e1.id == e2.id ? 0 : -1;
+        }
+    }
+
+    class EventClass {
+
+        int id;
+        String name;
+        String date;
+        String comment;
+        boolean checked;
+
+
+        EventClass(int _id, String _name, String _date, String _comment, boolean _checked) {
+            id = _id;
+            name = _name;
+            date = _date;
+            comment = _comment;
+            checked = _checked;
+        }
+
     }
 }
