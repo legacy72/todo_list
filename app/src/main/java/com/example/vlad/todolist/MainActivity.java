@@ -3,6 +3,7 @@ package com.example.vlad.todolist;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -74,11 +76,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickEditEvent(View v) {
-        Intent intent = new Intent(this, EditEvent.class);
-        startActivityForResult(intent, 1);
-    }
-
 
     public void onClickAddEvent(View v) {
         Intent intent = new Intent(this, AddEvent.class);
@@ -87,13 +84,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data == null) {
-            return ;
-        }
-        String nameEvent = data.getStringExtra("textInputName");
-        String dateEvent = data.getStringExtra("eventDate");
+        if(requestCode == 1) {
+            if (data == null) {
+                return;
+            }
+            String nameEvent = data.getStringExtra("textInputName");
+            String dateEvent = data.getStringExtra("eventDate");
 
-        AddEvent(nameEvent, dateEvent);
+            AddEvent(nameEvent, dateEvent);
+        }
+        else if (requestCode == 2){
+            //
+        }
 
 
     }
@@ -118,8 +120,9 @@ public class MainActivity extends AppCompatActivity {
         llLine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast toast = Toast.makeText(getApplicationContext(), String.valueOf(v.getId()), Toast.LENGTH_SHORT);
-                toast.show();
+                // Toast toast = Toast.makeText(getApplicationContext(), String.valueOf(v.getId()), Toast.LENGTH_SHORT);
+                // toast.show();
+                EditEvent(v);
             }
         });
 
@@ -211,6 +214,30 @@ public class MainActivity extends AppCompatActivity {
         return e;
     }
 
+
+
+    public void EditEvent(View v){
+        //EventClass e = listOfEvents.get(v.getId());
+
+
+        for(EventClass e : listOfEvents) {
+            if(e.id == v.getId()) {
+                Log.d("logs", String.valueOf(e.name));
+                Intent intent = new Intent(this, EditEvent.class);
+                intent.putExtra("event", e);
+                startActivityForResult(intent, 2);
+            }
+        }
+
+    }
+
+
+
+
+
+
+
+
     class EventComp implements Comparator<EventClass>{
         @Override
         public int compare(EventClass e1, EventClass e2) {
@@ -218,22 +245,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class EventClass {
-
-        int id;
-        String name;
-        String date;
-        String comment;
-        boolean checked;
-
-
-        EventClass(int _id, String _name, String _date, String _comment, boolean _checked) {
-            id = _id;
-            name = _name;
-            date = _date;
-            comment = _comment;
-            checked = _checked;
-        }
-
-    }
 }

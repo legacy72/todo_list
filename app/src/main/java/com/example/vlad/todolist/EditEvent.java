@@ -2,9 +2,12 @@ package com.example.vlad.todolist;
 
 import android.app.DatePickerDialog;
 
+import android.content.Intent;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -25,6 +28,12 @@ public class EditEvent extends AppCompatActivity implements DatePickerDialog.OnD
         setContentView(R.layout.activity_edit_event);
 
         setTitle("Редактирование события");
+
+
+
+        setEventParams();
+
+
 
         ImageButton btn = findViewById(R.id.button);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -50,4 +59,33 @@ public class EditEvent extends AppCompatActivity implements DatePickerDialog.OnD
         TextView tv = findViewById(R.id.textView);
         tv.setText(currentDate);
     }
+
+
+    public void setEventParams(){
+        Intent intent = getIntent();
+        EventClass e = (EventClass) intent.getSerializableExtra("event");
+
+        EditText etName = findViewById(R.id.nameEvent);
+        etName.setText(e.name);
+
+        EditText etComment = findViewById(R.id.commentEvent);
+        etComment.setText(e.comment);
+
+        TextView tvDate = findViewById(R.id.dateEvent);
+        tvDate.setText(e.date);
+
+
+        e.name = etName.getText().toString();
+        e.comment = etComment.getText().toString();
+        e.date = tvDate.getText().toString();
+    }
+
+    public void acceptChanges(){
+//        Intent intent = new Intent();
+//        intent.putExtra("textInputName", textInputName.getText().toString());
+//        intent.putExtra("eventDate", eventDate.getText().toString());
+//        setResult(RESULT_OK, intent);
+//        finish();
+    }
+
 }
