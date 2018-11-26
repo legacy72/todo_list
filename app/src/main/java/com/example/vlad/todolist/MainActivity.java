@@ -103,10 +103,30 @@ public class MainActivity extends AppCompatActivity {
             if (data == null){
                 return;
             }
-            EventClass e = (EventClass) data.getSerializableExtra("event");
 
+            //try catch костыль - переделать
+            try {
+                EventClass e = (EventClass) data.getSerializableExtra("event");
+                EditChangedEvent(e);
+            }
+            catch (Exception e){
 
-            EditChangedEvent(e);
+            }
+            try {
+                EventClass delE = (EventClass) data.getSerializableExtra("deleteEvent");
+
+                llLine = linearLayout.findViewWithTag("ll" + delE.id);
+                linearLayout.removeView(llLine);
+
+                int indexDeletedEvent = getIndexOfEvent(delE.id, listOfEvents);
+
+                listOfEvents.remove(indexDeletedEvent);
+                Log.d("logs", String.valueOf(listOfEvents.size()));
+                UpdateCountEvents();
+            }
+            catch (Exception e){
+
+            }
         }
 
 

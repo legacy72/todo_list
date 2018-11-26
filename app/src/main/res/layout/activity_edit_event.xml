@@ -94,6 +94,16 @@
                 android:onClick="backToMainActivity"
                 android:clickable="true"
                 app:srcCompat="@android:drawable/ic_menu_edit" />
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/delButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:layout_gravity="right"
+                android:onClick="ShowAlertDialog"
+                android:clickable="true"
+                app:srcCompat="@android:drawable/ic_delete" />
+
         </LinearLayout>
 
     </RelativeLayout>

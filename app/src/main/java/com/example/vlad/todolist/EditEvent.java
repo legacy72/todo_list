@@ -1,7 +1,9 @@
 package com.example.vlad.todolist;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
@@ -23,6 +25,7 @@ import java.util.Date;
 
 public class EditEvent extends AppCompatActivity {
     EventClass e;
+    AlertDialog.Builder ad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,24 @@ public class EditEvent extends AppCompatActivity {
             public void onClick(View v) {
                 DialogFragment datePicker = new DatePickerFragment();
                 showDatePickerDialog(e.date);
+            }
+        });
+
+
+        String button1String = "Да";
+        String button2String = "Нет";
+
+        ad = new AlertDialog.Builder(EditEvent.this);
+        ad.setTitle("Подтверждение удаления");  // заголовок
+        ad.setMessage("Вы уверены?"); // сообщение
+        ad.setPositiveButton(button1String, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+                DeleteEventAndBackToMainActivity();
+            }
+        });
+        ad.setNegativeButton(button2String, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+
             }
         });
     }
@@ -151,6 +172,17 @@ public class EditEvent extends AppCompatActivity {
         e.comment = etComment.getText().toString();
         e.date = tvDate.getText().toString();
 
+    }
+
+    public void DeleteEventAndBackToMainActivity(){
+        Intent intent = new Intent();
+        intent.putExtra("deleteEvent", e);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    public void ShowAlertDialog(View v){
+        ad.show();
     }
 
     public void backToMainActivity(View v){
