@@ -1,41 +1,32 @@
 package com.example.vlad.todolist;
 
+
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Parcelable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.support.v7.app.AppCompatActivity;
+import android.util.JsonReader;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.TableLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.w3c.dom.Text;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.Serializable;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.EventListener;
 import java.util.Iterator;
 import java.util.List;
 
@@ -51,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         UpdateCountEvents();
-
     }
 
     @Override
@@ -98,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
             String commentEvent = data.getStringExtra("textInputComment");
 
             AddEvent(nameEvent, dateEvent, commentEvent);
+
+            convertToJsonAndWriteToFile();
         }
         else if (requestCode == 2){
             if (data == null){
@@ -131,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
 
 
     public void UpdateCountEvents(){
@@ -205,6 +199,74 @@ public class MainActivity extends AppCompatActivity {
     public static float convertPixelsToDp(float px, Context context){
         return px / context.getResources().getDisplayMetrics().density;
     }
+
+
+
+    public void convertToJsonAndWriteToFile(){
+        JSONArray jsonArray = new JSONArray();
+        for (EventClass eventClass : listOfEvents){
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("id", eventClass.id);
+                jsonObject.put("name", eventClass.name);
+                jsonObject.put("date", eventClass.date);
+                jsonObject.put("comment", eventClass.comment);
+                jsonObject.put("checked", eventClass.checked);
+            }
+            catch (JSONException e){
+                Log.e("logs", e.toString());
+            }
+            jsonArray.put(jsonObject);
+        }
+
+
+        writeToFile(jsonArray.toString(), MainActivity.this);
+        String loadJson = readFromFile(MainActivity.this);
+        Log.d("logs", loadJson);
+
+    }
+
+
+    private void writeToFile(String data,Context context) {
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("data.json", Context.MODE_PRIVATE));
+            outputStreamWriter.write(data);
+            outputStreamWriter.close();
+        }
+        catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
+    }
+
+    private String readFromFile(Context context) {
+
+        String ret = "";
+
+        try {
+            InputStream inputStream = context.openFileInput("data.json");
+
+            if ( inputStream != null ) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString = "";
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while ( (receiveString = bufferedReader.readLine()) != null ) {
+                    stringBuilder.append(receiveString);
+                }
+                inputStream.close();
+                ret = stringBuilder.toString();
+            }
+        }
+        catch (FileNotFoundException e) {
+            Log.e("login activity", "File not found: " + e.toString());
+        } catch (IOException e) {
+            Log.e("login activity", "Can not read file: " + e.toString());
+        }
+
+        return ret;
+    }
+
 
     //лоханская верстка, лучше себя пожалеть и не смотреть код
     public void AddEvent(final String nameEvent, String dateEvent, String commentEvent){
