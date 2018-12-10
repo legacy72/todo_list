@@ -9,9 +9,15 @@ import android.util.JsonReader;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -29,12 +35,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     LinearLayout linearLayout;
     LinearLayout llLine;
     ArrayList<EventClass> listOfEvents = new ArrayList<EventClass>();
     String countEvents = "0";
+    Menu menu;
+    Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +55,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        spinner = (Spinner) menu.findItem(R.id.main_spinner).getActionView();
+        if (spinner == null)
+            Log.d("log1", "spinner proeban");
+        ArrayAdapter<CharSequence> ada = ArrayAdapter.createFromResource(this,
+                R.array.spinner_choices, R.layout.spinner_elem);
+        ada.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        spinner.setAdapter(ada);
+        spinner.setOnItemSelectedListener(this);
+//        this.menu = menu;
         return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+//        if (item.getItemId() == R.id.itemAddEvent)
+//        {
+//            Intent intent = new Intent(this, AddEventActivity.class);
+//            startActivityForResult(intent, 1);
+//            return true;
+//        }
+//        else if (item.getItemId() == R.id.menu_btn_sort)
+//        {
+//            sortMode = (sortMode + 1) % 2;
+//            PerformSort();
+//        }
+//        else if (item.getItemId() == R.id.menu_btn_del_solved)
+//        {
+//            ListIterator<UserEvent> iter = events.listIterator();
+//            while (iter.hasNext())
+//            {
+//                if (iter.next().isFinished)
+//                    iter.remove();
+//            }
+//            SaveToFile();
+//            onItemSelected(null, null, spinner.getSelectedItemPosition(),
+//                    spinner.getSelectedItemId());
+//        }
+        return super.onOptionsItemSelected(item);
     }
 
 //    @Override
@@ -88,8 +134,10 @@ public class MainActivity extends AppCompatActivity {
             String nameEvent = data.getStringExtra("textInputName");
             String dateEvent = data.getStringExtra("eventDate");
             String commentEvent = data.getStringExtra("textInputComment");
+            Boolean checked = Boolean.FALSE;
 
-            AddEvent(nameEvent, dateEvent, commentEvent);
+            EventClass e = FillListOfEvents(nameEvent, dateEvent, commentEvent, checked);
+            AddEvent(e);
 
             convertToJsonAndWriteToFile();
 
@@ -173,15 +221,15 @@ public class MainActivity extends AppCompatActivity {
 
 
     //заполняем лист объектов событий
-    public EventClass FillListOfEvents(String nameEvent, String dateEvent, String commentEvent){
+    public EventClass FillListOfEvents(String nameEvent, String dateEvent, String commentEvent, Boolean checked){
         EventClass e;
         if (listOfEvents.size() == 0) {
-            e = new EventClass(1, nameEvent, dateEvent, commentEvent, false);
+            e = new EventClass(1, nameEvent, dateEvent, commentEvent, checked);
             listOfEvents.add(e);
         }
         else{
             EventClass maxId = Collections.max(listOfEvents, new EventComp());
-            e = new EventClass(maxId.id + 1, nameEvent, dateEvent, commentEvent, false);
+            e = new EventClass(maxId.id + 1, nameEvent, dateEvent, commentEvent, checked);
             listOfEvents.add(e);
         }
         return e;
@@ -191,7 +239,8 @@ public class MainActivity extends AppCompatActivity {
     public void StartActivityForEditEvent(View v){
 
         for(EventClass e : listOfEvents) {
-            if(e.id == v.getId()) {
+            if(e.id == v.getId() && !e.checked) {
+                Log.d("logs", String.valueOf(e.checked));
                 Intent intent = new Intent(this, EditEvent.class);
                 intent.putExtra("event", e);
                 startActivityForResult(intent, 2);
@@ -276,23 +325,35 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d("logs", ret.toString());
         try{
-        JSONArray evs = new JSONObject(ret).getJSONArray("EVENTS");
-        for (int i = 0; i < ret.length(); i++) {
-            AddEvent(((JSONObject)evs.get(i)).getString("name"),((JSONObject)evs.get(i)).getString("date"),((JSONObject)evs.get(i)).getString("comment") );
+            JSONArray evs = new JSONObject(ret).getJSONArray("EVENTS");
+            for (int i = 0; i < ret.length(); i++) {
+                EventClass e = FillListOfEvents(
+                        ((JSONObject)evs.get(i)).getString("name"),
+                        ((JSONObject)evs.get(i)).getString("date"),
+                        ((JSONObject)evs.get(i)).getString("comment"),
+                        ((JSONObject)evs.get(i)).getBoolean("checked")
+                );
+                Log.d("logs", String.valueOf("i: " + e.checked));
+                AddEvent(e);
+            }
         }
-        }catch (JSONException ex){}
+        catch (JSONException ex){}
 
         return ret;
     }
 
 
+    public void changeCheckedEvent(EventClass e, Boolean isChecked){
+        int eventId = e.id;
+        int index = getIndexOfEvent(eventId, listOfEvents);
+        e.checked = isChecked;
+        Log.d("logs", String.valueOf(e.checked));
+        listOfEvents.set(index , e);
+        convertToJsonAndWriteToFile();
+    }
+
     //лоханская верстка, лучше себя пожалеть и не смотреть код
-    public void AddEvent(final String nameEvent, String dateEvent, String commentEvent){
-
-        // создаем объект события
-        EventClass e = FillListOfEvents(nameEvent, dateEvent, commentEvent);
-
-
+    public void AddEvent(final EventClass e){
         linearLayout = findViewById(R.id.mainLinearLayout);
 
         //лайаут для всего списка
@@ -304,8 +365,6 @@ public class MainActivity extends AppCompatActivity {
         llLine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Toast toast = Toast.makeText(getApplicationContext(), String.valueOf(v.getId()), Toast.LENGTH_SHORT);
-                // toast.show();
                 StartActivityForEditEvent(v);
             }
         });
@@ -334,10 +393,23 @@ public class MainActivity extends AppCompatActivity {
 
 
         //чекбокс
-        CheckBox checkbox = new CheckBox(this);
+        final CheckBox checkbox = new CheckBox(this);
+        checkbox.setId(e.id);
         checkbox.setTag("cb" + e.id);
         checkbox.setLayoutParams(lpForCheckBox);
         checkbox.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
+        Log.d("logs", String.valueOf("eee: " + e.checked));
+        if (e.checked) {
+            checkbox.setChecked(true);
+        }
+        checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                changeCheckedEvent(e, isChecked);
+            }
+        });
 
         //текствью для названия события
         LinearLayout.LayoutParams lpForTvName = new LinearLayout.LayoutParams(0,
@@ -379,4 +451,13 @@ public class MainActivity extends AppCompatActivity {
         UpdateCountEvents();
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
 }

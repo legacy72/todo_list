@@ -4,26 +4,27 @@
     tools:context=".MainActivity">
 
     <item
-        android:id="@+id/menu_spinner"
-        android:orderInCategory="100"
+        android:id="@+id/main_spinner"
         android:title="Item"
-        app:showAsAction="always"
-        app:actionViewClass="android.widget.Spinner" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:actionViewClass="android.widget.Spinner"
+        app:showAsAction="always"/>
     <item
         android:id="@+id/action_all"
         android:orderInCategory="101"
-        android:title="@string/action_all" />
+        android:title="Добавить" />
 
     <item
         android:id="@+id/action_complete"
         android:orderInCategory="101"
-        android:title="@string/action_complete"
+        android:title="Удалить все"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_not_complete"
         android:orderInCategory="101"
-        android:title="@string/action_not_complete"
+        android:title="Сортировка"
         app:showAsAction="never"/>
 
 </menu>

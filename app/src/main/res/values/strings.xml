@@ -1,6 +1,8 @@
 <resources>
-    <string name="action_all">Все</string>
-    <string name="action_complete">Решенные</string>
-    <string name="action_not_complete">Нерешенные</string>
+    <string-array name="spinner_choices">
+        <item>Все</item>
+        <item>Решенные</item>
+        <item>Нерешенные</item>
+    </string-array>
     <color name="my_grey">#f3f3f3</color>
 </resources>
