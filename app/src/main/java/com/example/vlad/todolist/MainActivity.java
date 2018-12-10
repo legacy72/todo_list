@@ -248,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
 
     }
+    
 
     // конверт пикселей в dp
     public static float convertPixelsToDp(float px, Context context){
