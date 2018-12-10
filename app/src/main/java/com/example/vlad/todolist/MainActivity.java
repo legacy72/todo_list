@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        
         return true;
     }
 
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
             AddEvent(nameEvent, dateEvent, commentEvent);
 
             convertToJsonAndWriteToFile();
+
         }
         else if (requestCode == 2){
             if (data == null){
@@ -116,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 listOfEvents.remove(indexDeletedEvent);
                 Log.d("logs", String.valueOf(listOfEvents.size()));
                 UpdateCountEvents();
+                convertToJsonAndWriteToFile();
             }
             catch (Exception e){
 
@@ -148,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
 
         int index = getIndexOfEvent(eventId, listOfEvents);
         listOfEvents.set(index , e);
+        convertToJsonAndWriteToFile();
     }
 
 

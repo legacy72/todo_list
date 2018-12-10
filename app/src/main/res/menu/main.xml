@@ -4,20 +4,25 @@
     tools:context=".MainActivity">
 
     <item
-        android:id="@+id/action_all"
+        android:id="@+id/menu_spinner"
         android:orderInCategory="100"
-        android:title="@string/action_all"
-        app:showAsAction="never"/>
+        android:title="Item"
+        app:showAsAction="always"
+        app:actionViewClass="android.widget.Spinner" />
+    <item
+        android:id="@+id/action_all"
+        android:orderInCategory="101"
+        android:title="@string/action_all" />
 
     <item
         android:id="@+id/action_complete"
-        android:orderInCategory="100"
+        android:orderInCategory="101"
         android:title="@string/action_complete"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_not_complete"
-        android:orderInCategory="100"
+        android:orderInCategory="101"
         android:title="@string/action_not_complete"
         app:showAsAction="never"/>
 
