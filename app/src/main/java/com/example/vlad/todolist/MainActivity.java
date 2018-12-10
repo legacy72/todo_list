@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         UpdateCountEvents();
+        readFromFile(this);
     }
 
     @Override
@@ -203,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void convertToJsonAndWriteToFile(){
+        JSONObject ob=new JSONObject();
         JSONArray jsonArray = new JSONArray();
         for (EventClass eventClass : listOfEvents){
             JSONObject jsonObject = new JSONObject();
@@ -219,10 +221,14 @@ public class MainActivity extends AppCompatActivity {
             jsonArray.put(jsonObject);
         }
 
-
-        writeToFile(jsonArray.toString(), MainActivity.this);
-        String loadJson = readFromFile(MainActivity.this);
-        Log.d("logs", loadJson);
+        try {
+            ob.put("EVENTS", jsonArray);
+        } catch (JSONException e){
+                Log.e("logs", e.toString());
+            }
+        writeToFile(ob.toString(), MainActivity.this);
+//        String loadJson = readFromFile(MainActivity.this);
+//        Log.d("logs", loadJson);
 
     }
 
@@ -263,6 +269,14 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             Log.e("login activity", "Can not read file: " + e.toString());
         }
+
+        Log.d("logs", ret.toString());
+        try{
+        JSONArray evs = new JSONObject(ret).getJSONArray("EVENTS");
+        for (int i = 0; i < ret.length(); i++) {
+            AddEvent(((JSONObject)evs.get(i)).getString("name"),((JSONObject)evs.get(i)).getString("date"),((JSONObject)evs.get(i)).getString("comment") );
+        }
+        }catch (JSONException ex){}
 
         return ret;
     }
