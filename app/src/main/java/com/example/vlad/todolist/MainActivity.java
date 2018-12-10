@@ -105,14 +105,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     {
         MenuItem btn = menu.findItem(R.id.btn_sort);
         filteredListOfEvents = listOfEvents;
+        String text = spinner.getSelectedItem().toString();
         if (!sort)
         {
             Collections.sort(filteredListOfEvents, new EventClass.IdComparator());
             linearLayout= findViewById(R.id.mainLinearLayout);
             linearLayout.removeAllViews();
-            for (final EventClass e : filteredListOfEvents) {
-                AddEvent(e);
-            }
+            ShowSorterdEvents(filteredListOfEvents, text);
             btn.setIcon(android.R.drawable.checkbox_off_background);
             TextView tvData = findViewById(R.id.tv2);
             tvData.setText("Дата");
@@ -122,9 +121,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             Collections.sort(filteredListOfEvents, new EventClass.DateComparator());
             linearLayout= findViewById(R.id.mainLinearLayout);
             linearLayout.removeAllViews();
-            for (final EventClass e : filteredListOfEvents) {
-                AddEvent(e);
-            }
+            ShowSorterdEvents(filteredListOfEvents, text);
             btn.setIcon(android.R.drawable.checkbox_on_background);
             TextView tvData = findViewById(R.id.tv2);
             tvData.setText("Дата ▼");
@@ -460,20 +457,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         UpdateCountEvents();
     }
 
-    public void ShowCompletedEvents(String sort){
+    public void ShowSorterdEvents(ArrayList<EventClass> events, String sort){
         linearLayout= findViewById(R.id.mainLinearLayout);
         linearLayout.removeAllViews();
 
-        for (final EventClass e : listOfEvents) {
-            if (sort.equals("all")) {
+        for (final EventClass e : events) {
+            if (sort.equals("Все")) {
                 AddEvent(e);
             }
-            else if (sort.equals("solved")) {
+            else if (sort.equals("Решенные")) {
                 if (e.checked) {
                     AddEvent(e);
                 }
             }
-            else if (sort.equals("notSolved")) {
+            else if (sort.equals("Нерешенные")) {
                 if (!e.checked) {
                     AddEvent(e);
                 }
@@ -487,15 +484,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         switch (position)
         {
             case 0:
-                ShowCompletedEvents("all");
+                ShowSorterdEvents(listOfEvents,"Все");
                 Log.d("logs", "sort by all");
                 break;
             case 1:
-                ShowCompletedEvents("solved");
+                ShowSorterdEvents(listOfEvents,"Решенные");
                 Log.d("logs", "sort by solved");
                 break;
             case 2:
-                ShowCompletedEvents("notSolved");
+                ShowSorterdEvents(listOfEvents,"Нерешенные");
                 Log.d("logs", "sort by not solved");
                 break;
         }
