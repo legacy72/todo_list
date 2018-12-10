@@ -10,19 +10,15 @@
         android:layout_height="wrap_content"
         app:actionViewClass="android.widget.Spinner"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/action_all"
-        android:orderInCategory="101"
-        android:title="Добавить" />
 
     <item
-        android:id="@+id/action_complete"
+        android:id="@+id/btn_delete_all_completed"
         android:orderInCategory="101"
         android:title="Удалить все"
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/action_not_complete"
+        android:id="@+id/btn_sort"
         android:orderInCategory="101"
         android:title="Сортировка"
         app:showAsAction="never"/>

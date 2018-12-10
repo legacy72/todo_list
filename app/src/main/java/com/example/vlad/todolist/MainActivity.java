@@ -41,9 +41,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     LinearLayout linearLayout;
     LinearLayout llLine;
     ArrayList<EventClass> listOfEvents = new ArrayList<EventClass>();
+    ArrayList<EventClass> filteredListOfEvents = new ArrayList<EventClass>();
     String countEvents = "0";
     Menu menu;
     Spinner spinner;
+    Boolean sort = Boolean.FALSE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,64 +62,74 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
         spinner = (Spinner) menu.findItem(R.id.main_spinner).getActionView();
-        if (spinner == null)
-            Log.d("log1", "spinner proeban");
         ArrayAdapter<CharSequence> ada = ArrayAdapter.createFromResource(this,
                 R.array.spinner_choices, R.layout.spinner_elem);
         ada.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(ada);
         spinner.setOnItemSelectedListener(this);
-//        this.menu = menu;
+        this.menu = menu;
         return true;
     }
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        if (item.getItemId() == R.id.itemAddEvent)
-//        {
-//            Intent intent = new Intent(this, AddEventActivity.class);
-//            startActivityForResult(intent, 1);
-//            return true;
-//        }
-//        else if (item.getItemId() == R.id.menu_btn_sort)
-//        {
-//            sortMode = (sortMode + 1) % 2;
-//            PerformSort();
-//        }
-//        else if (item.getItemId() == R.id.menu_btn_del_solved)
-//        {
-//            ListIterator<UserEvent> iter = events.listIterator();
-//            while (iter.hasNext())
-//            {
-//                if (iter.next().isFinished)
-//                    iter.remove();
-//            }
-//            SaveToFile();
-//            onItemSelected(null, null, spinner.getSelectedItemPosition(),
-//                    spinner.getSelectedItemId());
-//        }
+        if (item.getItemId() == R.id.btn_sort)
+        {
+            Log.d("logs", "sort dates");
+            sort = !sort;
+            PerformSort();
+        }
+        else if (item.getItemId() == R.id.btn_delete_all_completed)
+        {
+            ListIterator<EventClass> iter = listOfEvents.listIterator();
+
+            while (iter.hasNext())
+            {
+                if (iter.next().checked) {
+                    iter.remove();
+                }
+            }
+
+            UpdateCountEvents();
+            convertToJsonAndWriteToFile();
+            readFromFile(MainActivity.this);
+
+            onItemSelected(null, null, spinner.getSelectedItemPosition(),
+                    spinner.getSelectedItemId());
+        }
         return super.onOptionsItemSelected(item);
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//
-//
-//
-//        switch (id) {
-//            case R.id.action_all:
-//                infoTextView.setText("Все");
-//                return true;
-//            case R.id.action_complete:
-//                infoTextView.setText("Решенные");
-//                return true;
-//            case R.id.action_not_complete:
-//                infoTextView.setText("Нерешенные");
-//                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
+    public void PerformSort()
+    {
+        MenuItem btn = menu.findItem(R.id.btn_sort);
+        filteredListOfEvents = listOfEvents;
+        if (!sort)
+        {
+            Collections.sort(filteredListOfEvents, new EventClass.IdComparator());
+            linearLayout= findViewById(R.id.mainLinearLayout);
+            linearLayout.removeAllViews();
+            for (final EventClass e : filteredListOfEvents) {
+                AddEvent(e);
+            }
+            btn.setIcon(android.R.drawable.checkbox_off_background);
+            TextView tvData = findViewById(R.id.tv2);
+            tvData.setText("Дата");
+        }
+        else
+        {
+            Collections.sort(filteredListOfEvents, new EventClass.DateComparator());
+            linearLayout= findViewById(R.id.mainLinearLayout);
+            linearLayout.removeAllViews();
+            for (final EventClass e : filteredListOfEvents) {
+                AddEvent(e);
+            }
+            btn.setIcon(android.R.drawable.checkbox_on_background);
+            TextView tvData = findViewById(R.id.tv2);
+            tvData.setText("Дата ▼");
+        }
+    }
 
 
     public void onClickAddEvent(View v) {
@@ -164,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 int indexDeletedEvent = getIndexOfEvent(delE.id, listOfEvents);
 
                 listOfEvents.remove(indexDeletedEvent);
-                Log.d("logs", String.valueOf(listOfEvents.size()));
                 UpdateCountEvents();
                 convertToJsonAndWriteToFile();
             }
@@ -183,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         TextView tvForCountEvents = (TextView) findViewById(R.id.countEvents);
         countEvents = String.valueOf(listOfEvents.size());
 
-        tvForCountEvents.setText("Кол-во событий: " + countEvents);
+        tvForCountEvents.setText("Всего событий: " + countEvents);
 
     }
 
@@ -240,7 +251,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         for(EventClass e : listOfEvents) {
             if(e.id == v.getId() && !e.checked) {
-                Log.d("logs", String.valueOf(e.checked));
                 Intent intent = new Intent(this, EditEvent.class);
                 intent.putExtra("event", e);
                 startActivityForResult(intent, 2);
@@ -281,9 +291,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 Log.e("logs", e.toString());
             }
         writeToFile(ob.toString(), MainActivity.this);
-//        String loadJson = readFromFile(MainActivity.this);
-//        Log.d("logs", loadJson);
-
     }
 
 
@@ -299,9 +306,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private String readFromFile(Context context) {
+        linearLayout= findViewById(R.id.mainLinearLayout);
+        linearLayout.removeAllViews();
 
         String ret = "";
-
         try {
             InputStream inputStream = context.openFileInput("data.json");
 
@@ -324,21 +332,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             Log.e("login activity", "Can not read file: " + e.toString());
         }
 
-        Log.d("logs", ret.toString());
+        Log.d("logs", ret);
         try{
             JSONArray evs = new JSONObject(ret).getJSONArray("EVENTS");
-            for (int i = 0; i < ret.length(); i++) {
+            listOfEvents.clear();
+            for (int i = 0; i < evs.length(); i++) {
                 EventClass e = FillListOfEvents(
                         ((JSONObject)evs.get(i)).getString("name"),
                         ((JSONObject)evs.get(i)).getString("date"),
                         ((JSONObject)evs.get(i)).getString("comment"),
                         ((JSONObject)evs.get(i)).getBoolean("checked")
                 );
-                Log.d("logs", String.valueOf("i: " + e.checked));
                 AddEvent(e);
             }
         }
-        catch (JSONException ex){}
+        catch (JSONException ex){
+            Log.d("logs", ex.toString());
+        }
 
         return ret;
     }
@@ -348,7 +358,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         int eventId = e.id;
         int index = getIndexOfEvent(eventId, listOfEvents);
         e.checked = isChecked;
-        Log.d("logs", String.valueOf(e.checked));
         listOfEvents.set(index , e);
         convertToJsonAndWriteToFile();
     }
@@ -399,7 +408,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         checkbox.setTag("cb" + e.id);
         checkbox.setLayoutParams(lpForCheckBox);
         checkbox.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
-        Log.d("logs", String.valueOf("eee: " + e.checked));
         if (e.checked) {
             checkbox.setChecked(true);
         }
@@ -452,8 +460,45 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         UpdateCountEvents();
     }
 
+    public void ShowCompletedEvents(String sort){
+        linearLayout= findViewById(R.id.mainLinearLayout);
+        linearLayout.removeAllViews();
+
+        for (final EventClass e : listOfEvents) {
+            if (sort.equals("all")) {
+                AddEvent(e);
+            }
+            else if (sort.equals("solved")) {
+                if (e.checked) {
+                    AddEvent(e);
+                }
+            }
+            else if (sort.equals("notSolved")) {
+                if (!e.checked) {
+                    AddEvent(e);
+                }
+            }
+        }
+    }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Log.d("log1", "selected spinner pos " + position);
+        switch (position)
+        {
+            case 0:
+                ShowCompletedEvents("all");
+                Log.d("logs", "sort by all");
+                break;
+            case 1:
+                ShowCompletedEvents("solved");
+                Log.d("logs", "sort by solved");
+                break;
+            case 2:
+                ShowCompletedEvents("notSolved");
+                Log.d("logs", "sort by not solved");
+                break;
+        }
 
     }
 

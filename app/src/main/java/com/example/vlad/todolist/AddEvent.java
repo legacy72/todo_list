@@ -54,7 +54,8 @@ public class AddEvent extends AppCompatActivity implements DatePickerDialog.OnDa
 
         String eventDateStr = eventDate.getText().toString();
         if(eventDateStr.equals("Дата не указана")){
-            eventDateStr = "Не указано";
+            Toast.makeText(this, "Дата не выбрана", Toast.LENGTH_SHORT).show();
+            return;
         }
 
 

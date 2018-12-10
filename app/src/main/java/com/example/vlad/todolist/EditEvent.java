@@ -75,7 +75,7 @@ public class EditEvent extends AppCompatActivity {
             String monthStr = split[1];
             year = Integer.valueOf(split[2]);
 
-            month = ConvertMonth(monthStr) - 1; // костыль чтобы сместить месяц т.к. у них с 0
+            month = ConvertMonth(monthStr) - 1; // сместить месяц т.к. у них с 0
         }
         catch (Exception e){
             //типо экзепшн
