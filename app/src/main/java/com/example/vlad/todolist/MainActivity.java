@@ -146,7 +146,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             Boolean checked = Boolean.FALSE;
 
             EventClass e = FillListOfEvents(nameEvent, dateEvent, commentEvent, checked);
-            AddEvent(e);
+//            AddEvent(e);
+
+            String text = spinner.getSelectedItem().toString();
+            ShowSorterdEvents(listOfEvents, text);
+
+            PerformSort();
 
             convertToJsonAndWriteToFile();
 
@@ -240,6 +245,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             e = new EventClass(maxId.id + 1, nameEvent, dateEvent, commentEvent, checked);
             listOfEvents.add(e);
         }
+
+
         return e;
     }
 
